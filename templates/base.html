@@ -1,0 +1,60 @@
+{% load static %}<!doctype html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}PayGuard AI{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="{% static 'css/style.css' %}" rel="stylesheet">
+  <link href="{% static 'css/bot.css' %}" rel="stylesheet">
+</head>
+<body data-page="{{ request.resolver_match.url_name|default:'' }}"
+      data-auth="{% if user.is_authenticated %}1{% else %}0{% endif %}"
+      data-next="{{ request.GET.next }}"
+      data-tour="{% if user.is_authenticated %}{% url 'home' %},{% url 'dashboard' %},{% url 'upload' %},{% url 'timeline' %},{% url 'family' %},{% url 'chain' %},{% url 'whatif' %}{% else %}{% url 'home' %},{% url 'register' %},{% url 'login' %},{% url 'whatif' %},{% url 'about' %}{% endif %}">
+<nav class="navbar navbar-expand-lg border-bottom sticky-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="{% url 'home' %}" data-t="This is the PayGuard AI menu. You can jump to any page from here."><i class="bi bi-shield-check text-success"></i> PayGuard AI</a>
+    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+    <div id="nav" class="collapse navbar-collapse">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}" data-t="Link to the home page.">Home</a></li>
+        {% if user.is_authenticated %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}" data-t="Your dashboard with verification counts.">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'upload' %}" data-t="Payment screenshots are checked here.">Verify</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'history' %}" data-t="Search and filter your past verifications.">History</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" data-t="Fraud investigation tools: timeline, family tree and fraud chain.">Investigate</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'timeline' %}" data-t="The full verification history with evidence timelines lives here.">Timeline</a></li>
+            <li><a class="dropdown-item" href="{% url 'family' %}" data-t="Similar screenshots are linked together here.">Family Tree</a></li>
+            <li><a class="dropdown-item" href="{% url 'chain' %}" data-t="A graph of fraud evidence appears here.">Fraud Chain</a></li>
+          </ul>
+        </li>
+        {% endif %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'whatif' %}" data-t="Change scenarios here and see the decision change.">What-If</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'about' %}" data-t="About the project and its technology.">About</a></li>
+        {% if user.is_staff %}<li class="nav-item"><a class="nav-link" href="{% url 'admin_dashboard' %}" data-t="Staff-only overview of all users.">Admin</a></li>{% endif %}
+      </ul>
+      <div class="d-flex gap-2 align-items-center">
+        {% if user.is_authenticated %}
+          <span class="text-secondary small">{{ user.username }}</span>
+          <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="btn btn-outline-light btn-sm" data-t="You can log out from here.">Logout</button></form>
+        {% else %}
+          <a class="btn btn-outline-light btn-sm" href="{% url 'login' %}" data-t="Click here to log in to your account.">Login</a>
+          <a class="btn btn-success btn-sm" href="{% url 'register' %}" data-t="Click here to create a new account.">Register</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>
+<main class="container py-4">
+  {% for m in messages %}<div class="alert alert-{{ m.tags|default:'info' }}" data-say="{{ m }}">{{ m }}</div>{% endfor %}
+  {% block content %}{% endblock %}
+</main>
+<footer class="text-center text-secondary small py-4">PayGuard AI - verify the payment, not the screenshot.</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/bot.js' %}"></script>
+</body>
+</html>

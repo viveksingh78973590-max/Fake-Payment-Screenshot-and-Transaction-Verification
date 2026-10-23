@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Admin dashboard - PayGuard AI{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Admin dashboard</h2><a class="btn btn-outline-light" href="/django-admin/">Django admin (manage ledger)</a></div>
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md"><div class="card p-3 stat"><small>Total</small><h2>{{ total }}</h2></div></div>
+  <div class="col-6 col-md"><div class="card p-3 stat"><small>Users</small><h2>{{ users }}</h2></div></div>
+  <div class="col-6 col-md"><div class="card p-3 stat border-success"><small class="text-success">Confirmed</small><h2>{{ confirmed }}</h2></div></div>
+  <div class="col-6 col-md"><div class="card p-3 stat border-warning"><small class="text-warning">Pending</small><h2>{{ pending }}</h2></div></div>
+  <div class="col-6 col-md"><div class="card p-3 stat border-danger"><small class="text-danger">Failed</small><h2>{{ failed }}</h2></div></div>
+  <div class="col-6 col-md"><div class="card p-3 stat border-danger"><small class="text-danger">Suspicious</small><h2>{{ suspicious }}</h2></div></div>
+</div>
+<div class="card p-3 mb-3"><h5>Flagged as suspicious</h5>{% include "_table.html" with rows=flagged %}</div>
+<div class="card p-3 mb-3"><h5>Latest verifications (all users)</h5>{% include "_table.html" with rows=recent %}</div>
+<div class="card p-3"><h5>Trusted ledger (sandbox)</h5>
+  <table class="table table-sm"><thead><tr><th>Reference</th><th>Amount</th><th>Status</th><th>Used</th></tr></thead>
+  {% for t in ledger %}<tr><td>{{ t.reference }}</td><td>{{ t.amount }}</td><td>{{ t.status }}</td><td>{{ t.used|yesno:"Yes,No" }}</td></tr>{% endfor %}</table></div>
+{% endblock %}

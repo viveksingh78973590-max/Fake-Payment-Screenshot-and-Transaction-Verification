@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}About - PayGuard AI{% endblock %}
+{% block content %}
+<h2>About PayGuard AI</h2>
+<p><strong>Problem:</strong> sellers hand over goods after seeing a screenshot, only to discover no money arrived.</p>
+<p><strong>Solution:</strong> analyse the screenshot for suspicious visual elements, then check the transaction details against a trusted payment record or authorised payment gateway.</p>
+<h5 class="mt-4">Technology stack</h5>
+<ul>
+  <li><strong>Python + Django</strong> - backend, authentication, verification logic, dashboards</li>
+  <li><strong>OpenCV + OCR (Tesseract)</strong> - image processing and field extraction</li>
+  <li><strong>Machine learning (scikit-learn)</strong> - classify suspicious image patterns</li>
+  <li><strong>HTML, CSS, Bootstrap, JavaScript</strong> - responsive frontend</li>
+  <li><strong>SQLite / PostgreSQL</strong> - users, history, extracted data, audit records</li>
+</ul>
+<h5 class="mt-4">Features</h5>
+<ul>
+  <li><strong>Payment Promise vs Reality</strong> - claimed amount, expected amount, screenshot status and the real provider record are compared</li>
+  <li><strong>Explainable verification</strong> - every verdict lists the reasons and a risk score</li>
+  <li><strong>Screenshot Family Tree</strong> - perceptual hashing links re-sent, cropped or edited copies</li>
+  <li><strong>Fraud Chain</strong> - graph of user, screenshot, reference, provider and scam message</li>
+  <li><strong>Payment Dispute Time Machine</strong> - timestamped evidence trail and CSV export</li>
+  <li><strong>Fraud What-If Simulator</strong> - flip problems on and watch the real decision engine react</li>
+  <li><strong>3D voice bot</strong> - hover help, page intros, login guidance and a guided tour</li>
+</ul>
+<p class="small text-secondary">The original browser-only PayGuard AI prototype is bundled too:
+  <a href="{% static 'standalone/payguard/index.html' %}">open the offline demo</a> (runs entirely in your browser, no server data).</p>
+<div class="alert alert-warning">A screenshot alone is never proof of payment. The ML score is only a supporting signal; the final decision always prefers verified provider data.</div>
+{% endblock %}

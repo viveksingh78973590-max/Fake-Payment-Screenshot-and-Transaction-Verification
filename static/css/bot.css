@@ -1,0 +1,26 @@
+/* PayGuard 3D voice bot (ported from the standalone PayGuard AI app) */
+#pgbot{position:fixed;left:20px;top:200px;width:120px;height:150px;z-index:1050;transition:left 1.6s ease-in-out,top 1.6s ease-in-out;perspective:500px;pointer-events:none}
+#pgbt{position:relative;width:120px;height:150px;transform-style:preserve-3d;animation:pgfl 2.6s ease-in-out infinite;transition:transform .15s}
+@keyframes pgfl{50%{margin-top:-9px}}
+#pgbot .hd{position:absolute;left:14px;top:0;width:92px;height:66px;border-radius:30px;background:linear-gradient(160deg,#fbfcfe,#c6ccd8);box-shadow:inset -6px -8px 12px #8a93a622,0 8px 14px #0005;transform:translateZ(22px)}
+#pgbot .hd:before{content:"";position:absolute;left:31px;top:-7px;width:30px;height:10px;border-radius:8px 8px 0 0;background:linear-gradient(#e2e6ee,#bcc2cf)}
+#pgbot .ear{position:absolute;top:20px;width:12px;height:26px;border-radius:7px;background:linear-gradient(90deg,#dfe3ea,#b3bac8)}
+#pgbot .ear.l{left:-8px}#pgbot .ear.r{right:-8px}
+#pgbot .vs{position:absolute;inset:8px;border-radius:22px;background:radial-gradient(ellipse at 50% 30%,#235a78,#0c1c2a 75%);box-shadow:inset 0 3px 8px #000a}
+#pgbot .ey{position:absolute;top:19px;width:15px;height:12px;border-radius:15px 15px 3px 3px;background:#58e6f3;box-shadow:0 0 8px #58e6f3;animation:pgbl 4s infinite}
+#pgbot .ey.l{left:17px}#pgbot .ey.r{right:17px}
+@keyframes pgbl{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+#pgbot .sm{position:absolute;left:50%;margin-left:-6px;top:37px;width:12px;height:6px;border-radius:0 0 12px 12px;background:#58e6f3;box-shadow:0 0 6px #58e6f3}
+#pgbot .bd{position:absolute;left:27px;top:68px;width:66px;height:80px;border-radius:50% 50% 46% 46%/42% 42% 58% 58%;background:linear-gradient(150deg,#fff,#cfd5e0);box-shadow:inset -8px -10px 14px #8a93a633,0 8px 14px #0004;transform:translateZ(10px)}
+#pgbot .bd:before{content:"";position:absolute;left:12px;top:-8px;width:42px;height:14px;border-radius:50%;background:#b9c0cd}
+#pgbot .bd:after{content:"";position:absolute;left:8px;right:8px;top:48px;height:2px;background:#aeb6c4;border-radius:2px}
+#pgbot .arm{position:absolute;top:76px;width:22px;height:60px;border-radius:14px;background:linear-gradient(90deg,#eef0f5,#bcc3d0);transform-origin:50% 8px}
+#pgbot .arm.l{left:12px;transform:rotate(14deg)}#pgbot .arm.r{right:12px;transform:rotate(-14deg)}
+#pgbb{position:absolute;left:126px;top:-6px;width:240px;background:#fff;color:#111;padding:9px 11px;border-radius:12px;font-size:13px;display:none;box-shadow:0 6px 18px #0006;line-height:1.4}
+#pgbb.s{display:block}#pgbot.r #pgbb{left:-256px}
+#pgctl{position:fixed;right:16px;bottom:16px;z-index:1060;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+@media (max-width:576px){
+  #pgbot{display:none}
+  #pgbb.m{display:block;position:fixed;left:12px;right:12px;bottom:64px;top:auto;width:auto;z-index:1070}
+}
+@media (prefers-reduced-motion:reduce){#pgbt{animation:none}#pgbot{transition:none}}

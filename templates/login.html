@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Login - PayGuard AI{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-md-5"><div class="card p-4">
+  <h3 class="mb-3">Login</h3>
+  {% if next %}<div class="alert alert-info py-2">Please log in first - that page opens only after login.</div>{% endif %}
+  <form method="post">{% csrf_token %}
+    {% if form.errors %}<div class="alert alert-danger">Invalid username or password.</div>{% endif %}
+    <div class="mb-3"><label class="form-label">Username</label><input name="username" class="form-control" required autofocus data-t="Type your registered username here."></div>
+    <div class="mb-3"><label class="form-label">Password</label><input type="password" name="password" class="form-control" required data-t="Type your password here."></div>
+    <input type="hidden" name="next" value="{{ next }}">
+    <button class="btn btn-success w-100" data-t="Click here to log in.">Login</button>
+  </form>
+  <p class="mt-3 mb-0 small">No account? <a href="{% url 'register' %}">Register</a></p>
+</div></div></div>
+{% endblock %}

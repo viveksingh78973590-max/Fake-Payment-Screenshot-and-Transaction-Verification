@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Result #{{ r.pk }} - PayGuard AI{% endblock %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card p-2"><img src="{% url 'screenshot' r.pk %}" class="img-fluid rounded" alt="screenshot"></div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card p-4 result-{{ r.result }} mb-3" data-t="This is the verdict. The reasons below explain exactly why.">
+      <div class="d-flex align-items-center gap-3">
+        <i class="bi {% if r.result == 'confirmed' %}bi-check-circle-fill text-success{% elif r.result == 'pending' %}bi-hourglass-split text-warning{% else %}bi-x-octagon-fill text-danger{% endif %} display-4"></i>
+        <div class="flex-grow-1"><h2 class="mb-0">{{ r.get_result_display }}</h2><small class="text-secondary">Verification #{{ r.pk }} - {{ r.created_at|date:"d M Y H:i" }}{% if r.is_demo %} - demo{% endif %}</small></div>
+        <div class="text-end"><small class="text-secondary">Risk score</small><div class="fs-3 fw-bold">{{ r.risk_score }}</div></div>
+      </div>
+      <h6 class="mt-3">Reasons (explainable verification)</h6>
+      <ul class="mb-0">{% for x in r.reasons %}<li>{{ x }}</li>{% endfor %}</ul>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-6"><div class="card p-3 h-100"><h6>Extracted by OCR</h6>
+        <table class="table table-sm mb-0">
+          <tr><td>Amount</td><td>{{ r.extracted_amount|default:"-" }}</td></tr>
+          <tr><td>Expected amount</td><td>{{ r.expected_amount|default:"-" }}</td></tr>
+          <tr><td>Reference</td><td>{{ r.extracted_reference|default:"-" }}</td></tr>
+          <tr><td>Date</td><td>{{ r.extracted_date|default:"-" }}</td></tr>
+          <tr><td>Status shown</td><td>{{ r.extracted_status|default:"-" }}</td></tr>
+          <tr><td>UPI ID</td><td>{{ r.upi_id|default:"-" }}</td></tr>
+          <tr><td>OCR confidence</td><td>{{ r.ocr_confidence }}%</td></tr>
+        </table></div></div>
+      <div class="col-md-6"><div class="card p-3 h-100"><h6>Provider check</h6>
+        <table class="table table-sm mb-3">
+          <tr><td>Record found</td><td>{{ r.provider_found|yesno:"Yes,No" }}</td></tr>
+          <tr><td>Provider status</td><td>{{ r.provider_status|default:"-" }}</td></tr>
+          <tr><td>Provider amount</td><td>{{ r.provider_amount|default:"-" }}</td></tr>
+          <tr><td>Source</td><td>{{ r.provider_source|default:"-" }}</td></tr>
+          <tr><td>Your own records</td><td>{{ r.get_merchant_confirm_display }}</td></tr>
+        </table>
+        <h6>Manipulation risk ({{ r.ml_method }})</h6>
+        <div class="progress" style="height:14px"><div class="progress-bar {% if r.fake_percent >= 60 %}bg-danger{% elif r.fake_percent >= 35 %}bg-warning{% else %}bg-success{% endif %}" style="width:{{ r.fake_percent }}%">{{ r.fake_percent }}%</div></div>
+      </div></div>
+    </div>
+    {% if r.image_flags %}<div class="card p-3 mt-3"><h6>Image warnings</h6><ul class="mb-0">{% for f in r.image_flags %}<li>{{ f }}</li>{% endfor %}</ul></div>{% endif %}
+    {% if r.suspicious_message %}<div class="card p-3 mt-3 border-danger"><h6>Attached message / link <small class="text-secondary">(do not open)</small></h6><pre class="mb-0">{{ r.suspicious_message }}</pre></div>{% endif %}
+    {% if similar or similar_hidden %}<div class="card p-3 mt-3"><h6>Similar screenshots (family)</h6>
+      <div class="d-flex gap-3 flex-wrap">
+        {% for s in similar %}<a href="{% url 'result' s.pk %}" class="text-decoration-none text-center"><img class="thumb" src="{% url 'screenshot' s.pk %}" alt=""><br><small>#{{ s.pk }} - {{ s.get_result_display }}</small></a>{% endfor %}
+      </div>
+      {% if similar_hidden %}<small class="text-secondary mt-2">{{ similar_hidden }} similar screenshot(s) belong to other users.</small>{% endif %}
+    </div>{% endif %}
+    {% if r.timeline %}<div class="card p-3 mt-3" data-t="This is the evidence timeline for this verification."><h6>Evidence timeline</h6>
+      <div class="tl">{% for t in r.timeline %}<div><small>{{ t.0 }}</small><br>{{ t.1 }}</div>{% endfor %}</div></div>{% endif %}
+    <details class="mt-3"><summary class="text-secondary">Raw OCR text</summary><pre class="small mt-2">{{ r.ocr_text }}</pre></details>
+    <div class="mt-3 d-flex flex-wrap gap-2"><a class="btn btn-success" href="{% url 'upload' %}">Verify another</a>
+      <a class="btn btn-outline-light" href="{% url 'chain' %}?id={{ r.pk }}">Fraud chain</a>
+      <a class="btn btn-outline-light" href="{% url 'history' %}">History</a></div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Family Tree - PayGuard AI{% endblock %}
+{% block content %}
+<h2 class="mb-1" data-t="This is the screenshot family tree. Similar or edited screenshots are linked together here."><i class="bi bi-diagram-3"></i> Screenshot Family Tree</h2>
+<p class="text-secondary">Matched with perceptual hashing (Hamming distance &le; 12 of 64 bits). Re-sent, cropped or lightly edited copies of one screenshot end up in the same family.</p>
+{% for f in families %}
+<div class="fam p-3 mb-3" data-t="This is a family. The screenshots inside it are similar to each other.">
+  <b>Family {{ forloop.counter }}</b> <span class="text-secondary">({{ f.members|length }} screenshots)</span>
+  <div class="d-flex gap-3 flex-wrap mt-2">
+    {% for r in f.members %}
+    <a href="{% url 'result' r.pk %}" class="text-decoration-none text-center">
+      <img class="thumb" src="{% url 'screenshot' r.pk %}" alt="screenshot #{{ r.pk }}"><br>
+      <small>#{{ r.pk }} &middot; {{ r.get_result_display }}</small>
+    </a>
+    {% endfor %}
+  </div>
+  <ul class="small mt-2 mb-0">
+    {% for e in f.edges %}<li>#{{ e.a.pk }} &harr; #{{ e.b.pk }}: {{ e.similarity }}% similar ({{ e.label }})</li>{% endfor %}
+  </ul>
+</div>
+{% empty %}
+<div class="card p-4">No similar screenshots found yet. Upload the same screenshot again (even slightly cropped), or load demo data from the <a href="{% url 'dashboard' %}">dashboard</a>.</div>
+{% endfor %}
+{% if singletons %}<p class="text-secondary small">{{ singletons }} screenshot(s) have no look-alikes.</p>{% endif %}
+{% endblock %}

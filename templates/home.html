@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero text-center py-5 rounded-4 mb-5">
+  <h1 class="display-5 fw-bold">PayGuard AI <span class="text-success">Fake Payment Detection</span></h1>
+  <p class="lead col-lg-8 mx-auto mt-3">Many sellers receive edited or fabricated payment screenshots as proof of payment.
+    PayGuard AI verifies the <strong>actual payment status</strong> rather than trusting a screenshot alone.</p>
+  <a class="btn btn-success btn-lg mt-2" data-t="Click here to start a verification." href="{% if user.is_authenticated %}{% url 'upload' %}{% else %}{% url 'register' %}{% endif %}">
+    <i class="bi bi-upload"></i> Verify a payment</a>
+  <div class="mt-3 d-flex flex-wrap gap-1 justify-content-center">
+    <span class="tag confirmed">Confirmed</span><span class="tag pending">Pending / unverifiable</span>
+    <span class="tag suspicious">Suspicious</span><span class="tag failed">Failed</span></div>
+</section>
+<h3 class="mb-3">How the system works</h3>
+<div class="row g-3 mb-5">
+  <div class="col-md"><div class="card step h-100 p-3 text-center"><i class="bi bi-image fs-2"></i><h6 class="mt-2">1. Upload payment screenshot</h6></div></div>
+  <div class="col-md"><div class="card step h-100 p-3 text-center"><i class="bi bi-text-paragraph fs-2"></i><h6 class="mt-2">2. Extract details using OCR</h6></div></div>
+  <div class="col-md"><div class="card step h-100 p-3 text-center"><i class="bi bi-search fs-2"></i><h6 class="mt-2">3. Analyze image &amp; validate data</h6></div></div>
+  <div class="col-md"><div class="card step h-100 p-3 text-center"><i class="bi bi-database-check fs-2"></i><h6 class="mt-2">4. Check trusted records / provider API</h6></div></div>
+  <div class="col-md"><div class="card step h-100 p-3 text-center"><i class="bi bi-patch-check fs-2"></i><h6 class="mt-2">5. Display verification result</h6>
+    <div class="d-flex flex-wrap gap-1 justify-content-center">
+      <span class="badge text-bg-success">Confirmed</span><span class="badge text-bg-warning">Pending</span><span class="badge text-bg-danger">Failed / Suspicious</span></div></div></div>
+</div>
+<div class="row g-3">
+  <div class="col-md-4"><div class="card p-3 h-100"><h5><i class="bi bi-eye"></i> OCR extraction</h5><p class="text-secondary mb-0">Reads amount, reference, date, UPI ID and status with OpenCV + Tesseract.</p></div></div>
+  <div class="col-md-4"><div class="card p-3 h-100"><h5><i class="bi bi-cpu"></i> ML detection</h5><p class="text-secondary mb-0">Error-level analysis, noise and metadata features scored by a scikit-learn model.</p></div></div>
+  <div class="col-md-4"><div class="card p-3 h-100"><h5><i class="bi bi-shield-lock"></i> Real verification</h5><p class="text-secondary mb-0">Matches reference and amount with a trusted ledger or payment gateway, blocks reuse.</p></div></div>
+</div>
+<h3 class="mt-5 mb-3">Investigation toolkit</h3>
+<div class="row g-3">
+  <div class="col-md-4"><a class="text-decoration-none" href="{% url 'upload' %}"><div class="card p-3 h-100 step" data-t="This is a feature: Payment Promise vs Reality. Compares the amount claimed, the amount expected and the real provider record."><h5><i class="bi bi-credit-card"></i> Payment Promise vs Reality</h5><p class="text-secondary mb-0">Compares the amount claimed, the amount expected and the real provider record.</p></div></a></div>
+  <div class="col-md-4"><a class="text-decoration-none" href="{% url 'family' %}"><div class="card p-3 h-100 step" data-t="This is a feature: Screenshot Family Tree. Links similar, cropped or edited screenshots with perceptual hashing."><h5><i class="bi bi-diagram-3"></i> Screenshot Family Tree</h5><p class="text-secondary mb-0">Links similar, cropped or edited screenshots with perceptual hashing.</p></div></a></div>
+  <div class="col-md-4"><a class="text-decoration-none" href="{% url 'upload' %}"><div class="card p-3 h-100 step" data-t="This is a feature: Explainable Verification. Every verdict comes with plain-language reasons and a risk score."><h5><i class="bi bi-chat-square-text"></i> Explainable Verification</h5><p class="text-secondary mb-0">Every verdict comes with plain-language reasons and a risk score.</p></div></a></div>
+  <div class="col-md-4"><a class="text-decoration-none" href="{% url 'chain' %}"><div class="card p-3 h-100 step" data-t="This is a feature: Fraud Chain. Graph of user, screenshot, reference, provider and scam messages."><h5><i class="bi bi-share"></i> Fraud Chain</h5><p class="text-secondary mb-0">Graph of user, screenshot, reference, provider and scam messages.</p></div></a></div>
+  <div class="col-md-4"><a class="text-decoration-none" href="{% url 'timeline' %}"><div class="card p-3 h-100 step" data-t="This is a feature: Dispute Time Machine. A timestamped evidence trail per payment, with CSV export."><h5><i class="bi bi-clock-history"></i> Dispute Time Machine</h5><p class="text-secondary mb-0">A timestamped evidence trail per payment, with CSV export.</p></div></a></div>
+  <div class="col-md-4"><a class="text-decoration-none" href="{% url 'whatif' %}"><div class="card p-3 h-100 step" data-t="This is a feature: Fraud What-If Simulator. Flip switches and watch the real decision engine change its verdict."><h5><i class="bi bi-sliders"></i> Fraud What-If Simulator</h5><p class="text-secondary mb-0">Flip switches and watch the real decision engine change its verdict.</p></div></a></div>
+</div>
+{% endblock %}

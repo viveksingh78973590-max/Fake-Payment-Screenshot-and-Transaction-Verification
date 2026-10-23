@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Register - PayGuard AI{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-md-6"><div class="card p-4">
+  <h3 class="mb-3">Create account</h3>
+  <form method="post">{% csrf_token %}
+    {% for f in form %}
+      <div class="mb-3"><label class="form-label">{{ f.label }}</label>
+        <input type="{{ f.field.widget.input_type }}" name="{{ f.html_name }}" {% if f.field.widget.input_type != 'password' %}value="{{ f.value|default_if_none:'' }}"{% endif %} class="form-control{% if f.errors %} is-invalid{% endif %}">
+        {% for e in f.errors %}<div class="invalid-feedback d-block">{{ e }}</div>{% endfor %}
+        {% if f.help_text %}<div class="form-text small">{{ f.help_text|safe }}</div>{% endif %}
+      </div>
+    {% endfor %}
+    <button class="btn btn-success w-100" data-t="Click here to create the account.">Register</button>
+  </form>
+</div></div></div>
+{% endblock %}

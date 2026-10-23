@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PayGuard AI</title>
+<style>
+:root{--bg:#0b1020;--card:#151c33;--tx:#e8ecf8;--mu:#97a2c4;--ac:#5b8cff;--ok:#2fd38a;--bad:#ff5d6c;--wn:#ffc24b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}
+@media (prefers-color-scheme:light){:root{--bg:#f2f5fc;--card:#fff;--tx:#161c30;--mu:#5b6685;color-scheme:light}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,sans-serif}
+nav{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px;background:var(--card);position:sticky;top:0;z-index:5}
+nav b{margin-right:auto;font-size:18px}nav a{padding:6px 10px;border-radius:8px;color:var(--mu);cursor:pointer}nav a.on,nav a:hover{background:var(--ac);color:#fff}
+main{max-width:980px;margin:auto;padding:16px}.card{background:var(--card);border-radius:14px;padding:16px;margin:12px 0}
+h1,h2,h3{margin:.3em 0}input,select,textarea,button{font:inherit;padding:9px 11px;border-radius:9px;border:1px solid #3a4468;background:transparent;color:var(--tx);width:100%;margin:4px 0}
+select option{color:#000}button{background:var(--ac);border:0;color:#fff;cursor:pointer;width:auto;padding:9px 16px}button.g{background:#3a4468}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-weight:600}
+.Verified{background:var(--ok);color:#022}.Suspicious{background:var(--wn);color:#321}.Failed{background:var(--bad);color:#fff}.Unable{background:#6b7694;color:#fff}
+table{width:100%;border-collapse:collapse}td,th{padding:7px;border-bottom:1px solid #2c3556;text-align:left}.ok{color:var(--ok)}.bad{color:var(--bad)}.wn{color:var(--wn)}
+.tl{border-left:2px solid var(--ac);padding-left:14px;margin-left:6px}.tl div{margin:8px 0}.tl small{color:var(--mu)}
+img.pv{max-width:180px;border-radius:10px}.scroll{overflow-x:auto}
+/* 3D robot */
+#bot{position:fixed;left:20px;top:200px;width:120px;height:150px;z-index:50;transition:left 1.6s ease-in-out,top 1.6s ease-in-out;perspective:500px;pointer-events:none}
+#bt{position:relative;width:120px;height:150px;transform-style:preserve-3d;animation:fl 2.6s ease-in-out infinite;transition:transform .15s}
+@keyframes fl{50%{margin-top:-9px}}
+.hd{position:absolute;left:14px;top:0;width:92px;height:66px;border-radius:30px;background:linear-gradient(160deg,#fbfcfe,#c6ccd8);box-shadow:inset -6px -8px 12px #8a93a622,0 8px 14px #0005;transform:translateZ(22px)}
+.hd:before{content:"";position:absolute;left:31px;top:-7px;width:30px;height:10px;border-radius:8px 8px 0 0;background:linear-gradient(#e2e6ee,#bcc2cf)}
+.ear{position:absolute;top:20px;width:12px;height:26px;border-radius:7px;background:linear-gradient(90deg,#dfe3ea,#b3bac8)}.ear.l{left:-8px}.ear.r{right:-8px}
+.vs{position:absolute;inset:8px;border-radius:22px;background:radial-gradient(ellipse at 50% 30%,#235a78,#0c1c2a 75%);box-shadow:inset 0 3px 8px #000a}
+.ey{position:absolute;top:19px;width:15px;height:12px;border-radius:15px 15px 3px 3px;background:#58e6f3;box-shadow:0 0 8px #58e6f3;animation:bl 4s infinite}.ey.l{left:17px}.ey.r{right:17px}
+@keyframes bl{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+.sm{position:absolute;left:50%;margin-left:-6px;top:37px;width:12px;height:6px;border-radius:0 0 12px 12px;background:#58e6f3;box-shadow:0 0 6px #58e6f3}
+.bd{position:absolute;left:27px;top:68px;width:66px;height:80px;border-radius:50% 50% 46% 46%/42% 42% 58% 58%;background:linear-gradient(150deg,#fff,#cfd5e0);box-shadow:inset -8px -10px 14px #8a93a633,0 8px 14px #0004;transform:translateZ(10px)}
+.bd:before{content:"";position:absolute;left:12px;top:-8px;width:42px;height:14px;border-radius:50%;background:#b9c0cd}
+.bd:after{content:"";position:absolute;left:8px;right:8px;top:48px;height:2px;background:#aeb6c4;border-radius:2px}
+.arm{position:absolute;top:76px;width:22px;height:60px;border-radius:14px;background:linear-gradient(90deg,#eef0f5,#bcc3d0);transform-origin:50% 8px}.arm.l{left:12px;transform:rotate(14deg)}.arm.r{right:12px;transform:rotate(-14deg)}
+#bb{position:absolute;left:126px;top:-6px;width:240px;background:#fff;color:#111;padding:9px 11px;border-radius:12px;font-size:13px;display:none;box-shadow:0 6px 18px #0006}
+#bb.s{display:block}#bot.r #bb{left:-256px}
+#start{position:fixed;right:16px;bottom:16px;z-index:60;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+svg text{fill:var(--tx);font-size:12px}
+</style></head><body>
+<nav id="nav"></nav><main id="m"></main>
+<div id="start"><button id="bTour" data-t="This button starts a guided tour of the whole project.">🤖 Start bot tour</button><button class="g" id="bMute">🔊 Voice on</button></div>
+<div id="bot"><div id="bt"><div class="arm l"></div><div class="arm r"></div><div class="bd"></div><div class="hd"><div class="ear l"></div><div class="ear r"></div><div class="vs"><div class="ey l"></div><div class="ey r"></div><div class="sm"></div></div></div></div><div id="bb"></div></div>
+<script>
+const $=s=>document.querySelector(s);
+let DB={users:[],recs:[],sess:null},mute=false,tour=false,last="";
+try{const d=localStorage.getItem("pg");if(d)DB=JSON.parse(d)}catch(e){}
+const save=()=>{try{localStorage.setItem("pg",JSON.stringify(DB))}catch(e){}};
+/* ---------- BOT ---------- */
+const bot=$("#bot"),bb=$("#bb"),bt=$("#bt");let tmo;
+function say(t,cb){bb.textContent=t;bb.classList.add("s");clearTimeout(tmo);
+ bot.classList.toggle("r",parseInt(bot.style.left)>innerWidth/2);
+ const done=()=>{tmo=setTimeout(()=>bb.classList.remove("s"),2500);cb&&cb()};
+ if(mute||!window.speechSynthesis){tmo=setTimeout(done,Math.min(5000,t.length*60));return}
+ speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="en-US";
+ const v=speechSynthesis.getVoices().find(v=>v.lang&&v.lang.startsWith("en"));if(v)u.voice=v;
+ u.onend=done;u.onerror=done;speechSynthesis.speak(u)}
+function go(x,y){bot.style.left=Math.max(8,Math.min(innerWidth-130,x))+"px";bot.style.top=Math.max(70,Math.min(innerHeight-160,y))+"px"}
+addEventListener("mousemove",e=>{const r=bot.getBoundingClientRect();const dx=(e.clientX-r.x-60)/innerWidth,dy=(e.clientY-r.y-70)/innerHeight;
+ bt.style.transform=`rotateY(${dx*80}deg) rotateX(${-dy*50}deg)`});
+document.addEventListener("mouseover",e=>{if(tour)return;const el=e.target.closest("[data-t]");if(!el)return;const t=el.dataset.t;if(t===last)return;last=t;
+ const r=el.getBoundingClientRect();go(r.right>innerWidth-380?r.left-140:r.right+10,r.top-20);say(t);setTimeout(()=>{if(last===t)last=""},6000)});
+$("#bMute").onclick=e=>{mute=!mute;window.speechSynthesis&&speechSynthesis.cancel();e.target.textContent=mute?"🔇 Voice off":"🔊 Voice on"};
+const INTRO={home:"Hello! I'm the PayGuard bot. This is the home page, with the project overview and all the features.",
+register:"This is the register page. Enter your name, email and a password to create an account.",
+login:"This is the login page. If you are new here, please register yourself first, and then log in.",
+verify:"This is the verify page. Upload a payment screenshot and see the promise versus reality check.",
+history:"This is the timeline and dashboard. Every verification and its full evidence trail is kept here.",
+family:"This is the screenshot family tree. Similar or edited screenshots are linked together here.",
+chain:"This is the fraud chain page. It connects screenshots, links and scam messages into a graph.",
+whatif:"This is the what-if simulator. Flip the switches and watch the decision change."};
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+$("#bTour").onclick=async()=>{if(tour){tour=false;window.speechSynthesis&&speechSynthesis.cancel();$("#bTour").textContent="🤖 Start bot tour";return}
+ tour=true;$("#bTour").textContent="⏹ Stop tour";const pos=[[60,160],[600,200],[100,420],[560,380],[300,250],[700,150],[120,300],[500,420]];
+ for(const [i,p] of ["home","register","login","verify","history","family","chain","whatif"].entries()){if(!tour)break;
+  show(p,true);go(...pos[i]);await wait(1700);await new Promise(r=>say(INTRO[p],r));await wait(600)}
+ if(tour)await new Promise(r=>say("The tour is complete. Now try it yourself. Put your cursor on anything and I will explain it.",r));
+ tour=false;$("#bTour").textContent="🤖 Start bot tour";show("home",true)};
+/* ---------- LOGIC (in-browser backend) ---------- */
+function decide(f){const R=[];let s=0;const A=(ok,t)=>R.push({ok,t});
+ const am=+f.claimed===+f.expected&&+f.expected>0;A(am,am?`Amount matches (₹${f.expected})`:`Amount mismatch: claimed ₹${f.claimed} vs expected ₹${f.expected}`);if(!am)s+=3;
+ const rf=/^\d{12}$/.test((f.ref||"").trim());A(rf?true:null,rf?"Reference number has a valid format":"Reference number is unclear or invalid (12 digits expected)");if(!rf)s+=1;
+ A(f.shown==="success"?true:f.shown==="pending"?null:false,`Status shown in screenshot: ${f.shown}`);if(f.shown==="pending")s+=1;
+ A(f.confirm==="yes"?true:f.confirm==="none"?null:false,f.confirm==="yes"?"Independent confirmation found in merchant/bank records":f.confirm==="none"?"No independent confirmation of the payment was found":"Payment not found in merchant records");
+ if(f.confirm==="none")s+=1;if(f.confirm==="no")s+=3;
+ A(!f.dup,f.dup?"This screenshot (or a close copy) was submitted before":"No duplicate screenshot found");if(f.dup)s+=3;
+ A(!f.link,f.link?"A suspicious link or scam message is attached":"No suspicious link attached");if(f.link)s+=2;
+ const v=f.shown==="failed"||f.confirm==="no"?"Failed":s>=3?"Suspicious":f.confirm==="yes"&&s<=1?"Verified":"Unable";
+ return{v,s,R}}
+const vl=v=>v==="Unable"?"Unable to Verify":v;
+function hashImg(src){return new Promise(r=>{const i=new Image();i.onload=()=>{const c=document.createElement("canvas");c.width=c.height=8;const x=c.getContext("2d");x.drawImage(i,0,0,8,8);
+ const d=x.getImageData(0,0,8,8).data,g=[];for(let k=0;k<64;k++)g.push((d[k*4]+d[k*4+1]+d[k*4+2])/3);const a=g.reduce((p,q)=>p+q)/64;r(g.map(q=>q>a?1:0).join(""))};i.onerror=()=>r(null);i.src=src})}
+const ham=(a,b)=>{let n=0;for(let i=0;i<64;i++)if(a[i]!==b[i])n++;return n};
+const now=()=>new Date().toLocaleString("en-IN");
+/* ---------- UI ---------- */
+const P={home,register,login,verify,history,family,chain,whatif};
+const NAV=[["home","Home","Link to the home page."],["verify","Verify","Payment screenshots are checked here."],["history","Timeline","The full verification history lives here."],["family","Family Tree","Similar screenshots are linked together here."],["chain","Fraud Chain","A graph of fraud evidence appears here."],["whatif","What-If","Change scenarios here and see the decision change."]];
+function show(p,force){const need=["verify","history","family","chain"];
+ if(need.includes(p)&&!DB.sess&&!force){const has=DB.users.length>0;
+  p=has?"login":"register";say(has?"Please log in first. This page opens only after login.":"You have not registered yet. Please register or sign up yourself first, and then log in.")}
+ const n=NAV.map(([k,l,h])=>`<a class="${k===p?"on":""}" data-t="${h}" onclick="show('${k}')">${l}</a>`);
+ n.push(DB.sess?`<a data-t="You can log out from here." onclick="DB.sess=null;save();show('home')">Logout (${DB.sess.name})</a>`:`<a data-t="Click here to create a new account." onclick="show('register')">Register</a><a data-t="Click here to log in to your account." onclick="show('login')">Login</a>`);
+ $("#nav").innerHTML='<b data-t="This is the PayGuard AI menu. You can jump to any page from here.">🛡️ PayGuard AI</b>'+n.join("");
+ $("#m").innerHTML=P[p]();scrollTo(0,0);if(!tour&&!force){say(INTRO[p]);go(innerWidth>800?innerWidth-420:20,160)}
+ if(p==="chain"&&$("#cs"))drawC()}
+function home(){return`<div class="card" data-t="This is the project introduction. PayGuard AI catches suspicious payment screenshots."><h1>🛡️ PayGuard AI</h1><p>Detect suspicious payment screenshots and verify the real transaction status. Results: <span class="tag Verified">Verified</span> <span class="tag Suspicious">Suspicious</span> <span class="tag Failed">Failed</span> <span class="tag Unable">Unable to Verify</span></p><button onclick="show('verify')" data-t="Click here to start a verification.">Start verification</button> <button class="g" onclick="demo()" data-t="This fills demo data so you can see every feature instantly.">Load demo data</button></div>
+<div class="grid">${[["💳","Payment Promise vs Reality","Compare the claim, expected amount and confirmation","verify"],["🔍","Screenshot Family Tree","Spot edited or cropped duplicates","family"],["🤖","Explainable Verification","Every verdict comes with reasons","verify"],["🕸️","Fraud Chain","Screenshot, link and message graph","chain"],["⏳","Dispute Time Machine","A full timeline of evidence","history"],["🧪","Fraud What-If Simulator","Change scenarios, watch the decision","whatif"]].map(f=>`<div class="card" style="cursor:pointer" onclick="show('${f[3]}')" data-t="This is a feature: ${f[1]}. ${f[2]}."><h3>${f[0]} ${f[1]}</h3><small>${f[2]}</small></div>`).join("")}</div>`}
+function register(){return`<div class="card" style="max-width:420px;margin:auto"><h2>Register</h2><input id="rn" placeholder="Name" data-t="Type your name here."><input id="re" placeholder="Email" data-t="Type your email address here."><input id="rp" type="password" placeholder="Password (min 6 characters)" data-t="Create a password here, at least six characters."><select id="rr" data-t="Choose a role. An admin can see all suspicious submissions."><option value="user">User</option><option value="admin">Admin</option></select><button onclick="reg()" data-t="Click here to create the account.">Create account</button><p id="rm" class="bad"></p></div>`}
+function reg(){const n=$("#rn").value.trim(),e=$("#re").value.trim().toLowerCase(),p=$("#rp").value;
+ if(!n||!/^\S+@\S+\.\S+$/.test(e)||p.length<6){$("#rm").textContent="Enter a name, a valid email and a password of 6+ characters.";return}
+ if(DB.users.some(u=>u.e===e)){$("#rm").textContent="This email is already registered. Please log in.";return}
+ DB.users.push({n,e,p:btoa(unescape(encodeURIComponent(p))),r:$("#rr").value});save();show("login");say("Registration successful! Now please log in.");last=""}
+function login(){return`<div class="card" style="max-width:420px;margin:auto"><h2>Login</h2><p><small>New here? <a style="color:var(--ac);cursor:pointer" onclick="show('register')">Register</a> first.</small></p><input id="le" placeholder="Email" data-t="Type your registered email here."><input id="lp" type="password" placeholder="Password" data-t="Type your password here."><button onclick="lg()" data-t="Click here to log in.">Login</button><p id="lm" class="bad"></p></div>`}
+function lg(){const e=$("#le").value.trim().toLowerCase(),p=btoa(unescape(encodeURIComponent($("#lp").value)));
+ if(!DB.users.length){$("#lm").textContent="No accounts exist yet.";say("Please register or sign up yourself first, and then log in.");return}
+ const u=DB.users.find(u=>u.e===e&&u.p===p);if(!u){$("#lm").textContent="Wrong email or password.";return}
+ DB.sess={name:u.n,e:u.e,r:u.r};save();show("verify");say(`Welcome ${u.n}! Login successful.`);last=""}
+const mine=()=>DB.recs.filter(r=>DB.sess&&(DB.sess.r==="admin"||r.u===DB.sess.e));
+function rows(R){return`<table>${R.map(r=>`<tr><td class="${r.ok===true?"ok":r.ok===false?"bad":"wn"}" style="width:30px">${r.ok===true?"✔":r.ok===false?"✖":"⚠"}</td><td>${r.t}</td></tr>`).join("")}</table>`}
+function verify(){return`<div class="card"><h2>💳 Payment Promise vs Reality</h2><div class="grid"><div><input type="file" id="vf" accept="image/*" data-t="Upload the payment screenshot here."><img id="pv" class="pv"></div>
+<div><input id="vc" type="number" placeholder="Amount claimed by user ₹" data-t="Enter the amount the user claims to have paid."><input id="ve" type="number" placeholder="Expected amount ₹" data-t="Enter the amount expected as per the bill."><input id="vr" placeholder="UPI reference / transaction ID (12 digits)" data-t="Enter the transaction number visible in the screenshot."></div>
+<div><select id="vs" data-t="Choose the payment status shown in the screenshot."><option value="success">Screenshot: Success</option><option value="pending">Pending</option><option value="failed">Failed</option></select><select id="vm" data-t="Choose the confirmation status from merchant or bank records."><option value="yes">Merchant record: confirmed</option><option value="no">Not found in records</option><option value="none">Not checked / unavailable</option></select><textarea id="vk" rows="2" placeholder="Suspicious link or scam message (optional)" data-t="Paste any suspicious link or message here."></textarea></div></div>
+<button onclick="run()" data-t="Click here to run the verification.">Verify</button></div><div id="vo"></div>`}
+async function run(){const f=$("#vf").files[0];const d={claimed:$("#vc").value,expected:$("#ve").value,ref:$("#vr").value,shown:$("#vs").value,confirm:$("#vm").value,msg:$("#vk").value.trim()};
+ if(!d.claimed||!d.expected){say("Please fill in the claimed and expected amounts first.");return}
+ let img=null,h=null;const ev=[[now(),"Screenshot and form submitted"]];
+ if(f){img=await new Promise(r=>{const x=new FileReader();x.onload=()=>r(x.result);x.readAsDataURL(f)});h=await hashImg(img)}
+ const sim=h?DB.recs.filter(r=>r.h).map(r=>({r,d:ham(h,r.h)})).filter(x=>x.d<=12):[];
+ d.dup=sim.length>0;d.link=!!d.msg;const res=decide(d);
+ ev.push([now(),h?`Image hash computed; ${sim.length} similar screenshot(s) found`:"No image provided"],[now(),`Analysis complete: ${d.dup?"duplicate; ":""}risk score ${res.s}`],[now(),`Final decision: ${vl(res.v)}`]);
+ DB.recs.push({id:Date.now(),u:DB.sess.e,d,h,v:res.v,R:res.R,s:res.s,ev,sim:sim.map(x=>({id:x.r.id,d:x.d})),t:now(),thumb:img&&await thumb(img)});save();
+ $("#vo").innerHTML=`<div class="card"><h2>Result: <span class="tag ${res.v}">${vl(res.v)}</span></h2><h3>Reasons (Explainable Verification)</h3>${rows(res.R)}<p><small>Note: this is a screenshot-based risk assessment, kept separate from confirmed payment status.</small></p></div>`;
+ say(`Verdict: ${vl(res.v)}. ${res.R.filter(r=>r.ok!==true)[0]?.t||"Everything matches."}`)}
+function thumb(src){return new Promise(r=>{const i=new Image();i.onload=()=>{const c=document.createElement("canvas");c.width=80;c.height=80*i.height/i.width;c.getContext("2d").drawImage(i,0,0,c.width,c.height);r(c.toDataURL("image/jpeg",.5))};i.src=src})}
+document.addEventListener("change",e=>{if(e.target.id==="vf"&&e.target.files[0])$("#pv").src=URL.createObjectURL(e.target.files[0])});
+function history(){const R=mine().slice().reverse(),c={};R.forEach(r=>c[r.v]=(c[r.v]||0)+1);
+ return`<div class="card" data-t="This dashboard summarises all verifications."><h2>⏳ Dashboard & Payment Dispute Time Machine</h2>${["Verified","Suspicious","Failed","Unable"].map(k=>`<span class="tag ${k}">${vl(k)}: ${c[k]||0}</span> `).join("")}<p><small>${DB.sess.r==="admin"?"Admin view: all submissions":"Your submissions"}</small></p><button class="g" onclick="csv()" data-t="This downloads the report as a CSV file.">Download CSV report</button></div>`+(R.length?R.map(r=>`<div class="card" data-t="This is one verification record with its full evidence timeline."><div style="display:flex;gap:12px;align-items:center">${r.thumb?`<img src="${r.thumb}" style="border-radius:8px">`:""}<div><b>₹${r.d.expected}</b> · ${r.t} · <span class="tag ${r.v}">${vl(r.v)}</span><br><small>${r.u}</small></div></div><div class="tl">${r.ev.map(e=>`<div><small>${e[0]}</small><br>${e[1]}</div>`).join("")}</div></div>`).join(""):'<div class="card">No records yet. Run a verification or load demo data from Home.</div>')}
+function csv(){const t="id,time,user,claimed,expected,ref,verdict\n"+mine().map(r=>[r.id,r.t,r.u,r.d.claimed,r.d.expected,r.d.ref,vl(r.v)].map(x=>`"${x}"`).join(",")).join("\n");
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"text/csv"}));a.download="payguard_report.csv";a.click()}
+function family(){const R=mine().filter(r=>r.h);if(R.length<2)return`<div class="card"><h2>🔍 Screenshot Family Tree</h2>At least two records with images are needed. Upload the same screenshot again (even slightly cropped), or load demo data from Home.</div>`;
+ const par=R.map((_,i)=>i),f=i=>par[i]===i?i:(par[i]=f(par[i])),E=[];
+ for(let i=0;i<R.length;i++)for(let j=i+1;j<R.length;j++){const d=ham(R[i].h,R[j].h);if(d<=12){par[f(i)]=f(j);E.push([i,j,Math.round(100-d/64*100)])}}
+ const G={};R.forEach((r,i)=>(G[f(i)]=G[f(i)]||[]).push(i));
+ return`<div class="card"><h2>🔍 Screenshot Family Tree</h2><p><small>Matched with perceptual hashing (Hamming distance ≤ 12).</small></p>`+Object.values(G).map((g,k)=>`<div class="card" style="background:#0002" data-t="This is a family. The screenshots inside it are similar to each other."><b>Family ${k+1}</b> (${g.length} screenshot${g.length>1?"s":""})<div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px">${g.map(i=>`<div>${R[i].thumb?`<img src="${R[i].thumb}" style="border-radius:8px"><br>`:"🖼️ "}<small>₹${R[i].d.expected} · ${vl(R[i].v)}</small></div>`).join("")}</div>${E.filter(e=>g.includes(e[0])).map(e=>`<div><small>#${e[0]+1} ⇄ #${e[1]+1}: ${e[2]}% similar ${e[2]<100?"(possibly edited/cropped)":"(exact copy)"}</small></div>`).join("")}</div>`).join("")+"</div>"}
+function chain(){const R=mine();if(!R.length)return`<div class="card"><h2>🕸️ Fraud Chain</h2>Run a verification or load demo data first.</div>`;
+ return`<div class="card"><h2>🕸️ Fraud Chain Reconstructor</h2><select id="cs" onchange="drawC()" data-t="Choose the verification whose graph you want to see.">${R.map((r,i)=>`<option value="${i}">${r.t} · ₹${r.d.expected} · ${vl(r.v)}</option>`).join("")}</select><div class="scroll"><svg id="cg" width="640" height="360" viewBox="0 0 640 360"></svg></div></div>`}
+function drawC(){const r=mine()[+$("#cs").value];if(!r)return;const N=[{l:"👤 "+r.u.split("@")[0],x:320,y:40},{l:"🖼️ Screenshot",x:130,y:150},{l:"🔢 Ref: "+(r.d.ref||"—"),x:130,y:290},{l:"🏦 Confirm: "+r.d.confirm,x:510,y:290}],E=[[0,1],[1,2],[1,3]];
+ if(r.d.msg){N.push({l:"🔗 Link / message",x:510,y:150});E.push([0,4],[4,1])}
+ r.sim.forEach((s,i)=>{N.push({l:"♻️ Similar screenshot",x:320,y:230+i*40});E.push([1,N.length-1])});
+ $("#cg").innerHTML=E.map(e=>`<line x1="${N[e[0]].x}" y1="${N[e[0]].y}" x2="${N[e[1]].x}" y2="${N[e[1]].y}" stroke="${r.d.msg&&(e[0]===4||e[1]===4)?"#ff5d6c":"#5b8cff"}" stroke-width="2"/>`).join("")+N.map(n=>`<g><rect x="${n.x-66}" y="${n.y-15}" width="132" height="30" rx="8" fill="#1e2747" stroke="#5b8cff"/><text x="${n.x}" y="${n.y+4}" text-anchor="middle" style="fill:#e8ecf8">${n.l}</text></g>`).join("")}
+function whatif(){const sw=[["am","Amount mismatch"],["du","Duplicate screenshot"],["mc","Missing payment confirmation"],["rf","Unclear reference number"],["lk","Suspicious link / scam message"],["fl","Screenshot shows Failed"]];
+ setTimeout(wi,0);return`<div class="card"><h2>🧪 Fraud What-If Simulator</h2><div class="grid">${sw.map(s=>`<label data-t="Flip this switch to change the scenario: ${s[1]}."><input type="checkbox" id="w_${s[0]}" onchange="wi()" style="width:auto"> ${s[1]}</label>`).join("")}</div></div><div class="card" id="wo"></div>`}
+function wi(){if(!$("#wo"))return;const g=k=>$("#w_"+k).checked;
+ const res=decide({claimed:g("am")?900:1000,expected:1000,ref:g("rf")?"12AB":"123456789012",shown:g("fl")?"failed":"success",confirm:g("mc")?"none":"yes",dup:g("du"),link:g("lk")});
+ $("#wo").innerHTML=`<h3>Decision: <span class="tag ${res.v}">${vl(res.v)}</span> (risk score ${res.s})</h3>${rows(res.R)}`}
+function demo(){if(!DB.sess){say("Please register and log in first, then load the demo data.");return}
+ const base="1100110011001100110011001100110011001100110011001100110011001100".split("");
+ const fl=n=>{const b=base.slice();for(let i=0;i<n;i++)b[i*5]=b[i*5]==="1"?"0":"1";return b.join("")};
+ const mk=(o,h,i)=>{const d=Object.assign({claimed:500,expected:500,ref:"402518830917",shown:"success",confirm:"yes",msg:""},o);d.dup=false;d.link=!!d.msg;const r=decide(d);
+  return{id:Date.now()+i,u:DB.sess.e,d,h,v:r.v,R:r.R,s:r.s,ev:[[now(),"Demo upload"],[now(),"Analysis complete"],[now(),"Final decision: "+vl(r.v)]],sim:h?[{id:0,d:3}]:[],t:now()}};
+ DB.recs.push(mk({},fl(0),1),mk({claimed:900,confirm:"none",ref:"98X"},fl(3),2),mk({claimed:900,confirm:"no",msg:"bit.ly/refund-now your refund is ready"},fl(6),3),mk({shown:"pending",confirm:"none"},null,4));
+ save();show("history");say("Demo data added. Now explore the timeline, family tree and fraud chain.")}
+show("home",true);
+</script></body></html>

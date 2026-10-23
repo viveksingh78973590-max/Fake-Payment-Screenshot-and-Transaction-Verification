@@ -1,0 +1,9 @@
+<div class="table-responsive"><table class="table align-middle">
+  <thead><tr><th>#</th><th>Reference</th><th>Amount</th><th>Fake risk</th><th>Risk score</th><th>Result</th><th>Date</th><th></th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+    <tr><td>{{ r.pk }}</td><td>{{ r.extracted_reference|default:"-" }}</td><td>{{ r.extracted_amount|default:"-" }}</td>
+      <td>{{ r.fake_percent }}%</td><td>{{ r.risk_score }}</td><td><span class="tag {{ r.tag_class }}">{{ r.get_result_display }}</span></td>
+      <td>{{ r.created_at|date:"d M Y H:i" }}</td><td><a class="btn btn-sm btn-outline-light" href="{% url 'result' r.pk %}">View</a></td></tr>
+  {% empty %}<tr><td colspan="8" class="text-secondary text-center">No verifications yet.</td></tr>{% endfor %}
+  </tbody></table></div>

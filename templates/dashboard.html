@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - PayGuard AI{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 data-t="This dashboard summarises all your verifications.">Dashboard</h2>
+  <div class="d-flex gap-2 flex-wrap">
+    {% if has_demo %}
+    <form method="post" action="{% url 'demo_clear' %}">{% csrf_token %}<button class="btn btn-outline-light" data-t="This removes the demo verifications from your account.">Clear demo data</button></form>
+    {% else %}
+    <form method="post" action="{% url 'demo_load' %}">{% csrf_token %}<button class="btn btn-outline-light" data-t="This fills demo data so you can see every feature instantly."><i class="bi bi-magic"></i> Load demo data</button></form>
+    {% endif %}
+    <a class="btn btn-outline-light" href="{% url 'export_csv' %}" data-t="This downloads your report as a CSV file."><i class="bi bi-download"></i> CSV report</a>
+    <a class="btn btn-success" href="{% url 'upload' %}" data-t="Click here to run a new verification."><i class="bi bi-upload"></i> New verification</a>
+  </div>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md"><div class="card p-3 stat"><small class="text-secondary">Total</small><h2>{{ total }}</h2></div></div>
+  <div class="col-6 col-md"><div class="card p-3 stat border-success"><small class="text-success">Confirmed</small><h2>{{ confirmed }}</h2></div></div>
+  <div class="col-6 col-md"><div class="card p-3 stat border-warning"><small class="text-warning">Pending</small><h2>{{ pending }}</h2></div></div>
+  <div class="col-6 col-md"><div class="card p-3 stat border-danger"><small class="text-danger">Failed</small><h2>{{ failed }}</h2></div></div>
+  <div class="col-6 col-md"><div class="card p-3 stat border-danger"><small class="text-danger">Suspicious</small><h2>{{ suspicious }}</h2></div></div>
+</div>
+<div class="card p-3">
+  <h5>Recent verifications</h5>
+  {% include "_table.html" with rows=recent %}
+  <a href="{% url 'history' %}" class="small">View full history</a>
+</div>
+{% endblock %}

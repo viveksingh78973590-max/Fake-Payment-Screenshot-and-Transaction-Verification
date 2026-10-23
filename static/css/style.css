@@ -1,0 +1,21 @@
+body { background: #0b0f14; }
+.navbar { background: #10161d; }
+.hero { background: linear-gradient(135deg, #0f2a1f, #0b1c2b); border: 1px solid #1f3a2e; }
+.card { background: #11181f; border: 1px solid #1f2933; border-radius: 14px; }
+.step { transition: transform .15s; } .step:hover { transform: translateY(-3px); }
+.stat h2 { margin: 0; }
+.result-confirmed { border-color: #198754; } .result-pending { border-color: #ffc107; }
+.result-failed, .result-suspicious { border-color: #dc3545; }
+pre { white-space: pre-wrap; background: #0b0f14; padding: .75rem; border-radius: 8px; }
+
+/* ---- PayGuard additions ---- */
+.tag { display:inline-block; padding:3px 12px; border-radius:20px; font-weight:600; font-size:.85rem; }
+.tag.confirmed { background:#2fd38a; color:#022; } .tag.suspicious { background:#ffc24b; color:#321; }
+.tag.failed { background:#ff5d6c; color:#fff; }    .tag.pending { background:#6b7694; color:#fff; }
+.tl { border-left:2px solid #5b8cff; padding-left:14px; margin-left:6px; }
+.tl div { margin:8px 0; } .tl small { color:#97a2c4; }
+.thumb { max-width:90px; max-height:120px; border-radius:8px; object-fit:cover; }
+.fam { background:#0d141b; border:1px solid #1f2933; border-radius:12px; }
+.reason-ok { color:#2fd38a; } .reason-bad { color:#ff5d6c; }
+svg.chain text { fill:#e8ecf8; font-size:12px; }
+.hero { position:relative; }

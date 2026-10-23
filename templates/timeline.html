@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Timeline - PayGuard AI{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+  <h2 data-t="This is the payment dispute time machine. Every verification and its evidence trail is kept here."><i class="bi bi-clock-history"></i> Payment Dispute Time Machine</h2>
+  <a class="btn btn-outline-light" href="{% url 'export_csv' %}" data-t="This downloads the report as a CSV file."><i class="bi bi-download"></i> Download CSV report</a>
+</div>
+<div class="mb-3 d-flex flex-wrap gap-2">
+  <span class="tag confirmed">Confirmed: {{ counts.confirmed }}</span><span class="tag pending">Pending: {{ counts.pending }}</span>
+  <span class="tag suspicious">Suspicious: {{ counts.suspicious }}</span><span class="tag failed">Failed: {{ counts.failed }}</span>
+</div>
+{% for r in page %}
+<div class="card p-3 mb-3" data-t="This is one verification record with its full evidence timeline.">
+  <div class="d-flex gap-3 align-items-center mb-2">
+    <a href="{% url 'result' r.pk %}"><img class="thumb" src="{% url 'screenshot' r.pk %}" alt="screenshot #{{ r.pk }}"></a>
+    <div>
+      <b>#{{ r.pk }}</b> &middot; {{ r.expected_amount|default:r.extracted_amount|default:"-" }} &middot; {{ r.created_at|date:"d M Y H:i" }}
+      <span class="tag {{ r.tag_class }} ms-1">{{ r.get_result_display }}</span><br>
+      <small class="text-secondary">{{ r.user.username }} &middot; risk score {{ r.risk_score }}{% if r.is_demo %} &middot; demo{% endif %}</small>
+    </div>
+  </div>
+  <div class="tl">{% for t in r.timeline %}<div><small>{{ t.0 }}</small><br>{{ t.1 }}</div>{% empty %}<div><small>No timeline recorded.</small></div>{% endfor %}</div>
+</div>
+{% empty %}
+<div class="card p-4">No records yet. <a href="{% url 'upload' %}">Run a verification</a> or load demo data from the <a href="{% url 'dashboard' %}">dashboard</a>.</div>
+{% endfor %}
+<nav class="d-flex gap-2">
+  {% if page.has_previous %}<a class="btn btn-sm btn-outline-light" href="?page={{ page.previous_page_number }}">Prev</a>{% endif %}
+  {% if page.paginator.num_pages > 1 %}<span class="small text-secondary align-self-center">Page {{ page.number }} of {{ page.paginator.num_pages }}</span>{% endif %}
+  {% if page.has_next %}<a class="btn btn-sm btn-outline-light" href="?page={{ page.next_page_number }}">Next</a>{% endif %}
+</nav>
+{% endblock %}

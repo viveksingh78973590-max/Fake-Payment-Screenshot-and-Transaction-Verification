@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}What-If Simulator - PayGuard AI{% endblock %}
+{% block content %}
+<h2 class="mb-1" data-t="This is the what-if simulator. Flip the switches and watch the decision change."><i class="bi bi-sliders"></i> Fraud What-If Simulator</h2>
+<p class="text-secondary">A Rs. 1000 payment is checked by the <strong>real decision engine</strong>. Switch problems on and watch the verdict change. Nothing is stored.</p>
+<div class="card p-3 mb-3"><div class="row g-2">
+  {% for key, label in switches %}
+  <div class="col-md-6"><div class="form-check form-switch" data-t="Flip this switch to change the scenario: {{ label }}.">
+    <input class="form-check-input wi" type="checkbox" role="switch" id="w_{{ key }}" data-key="{{ key }}">
+    <label class="form-check-label" for="w_{{ key }}">{{ label }}</label></div></div>
+  {% endfor %}
+</div></div>
+<div class="card p-3" id="wo" aria-live="polite"><span class="text-secondary">Loading...</span></div>
+<script>
+(function () {
+  const out = document.getElementById('wo'); let seq = 0;
+  async function run() {
+    const q = new URLSearchParams(); const my = ++seq;
+    document.querySelectorAll('.wi').forEach(c => { if (c.checked) q.set(c.dataset.key, '1'); });
+    try {
+      const r = await fetch("{% url 'whatif_api' %}?" + q.toString()); const d = await r.json();
+      if (my !== seq) return;
+      out.textContent = '';
+      const h = document.createElement('h4'); h.append('Decision: ');
+      const tag = document.createElement('span'); tag.className = 'tag ' + d.result; tag.textContent = d.label; h.append(tag);
+      const sm = document.createElement('small'); sm.className = 'text-secondary ms-2'; sm.textContent = 'risk score ' + d.risk; h.append(sm);
+      const ul = document.createElement('ul'); ul.className = 'mb-0 mt-2';
+      d.reasons.forEach(t => { const li = document.createElement('li'); li.textContent = t; ul.append(li); });
+      out.append(h, ul);
+    } catch (e) { out.textContent = 'Could not reach the server.'; }
+  }
+  document.querySelectorAll('.wi').forEach(c => c.addEventListener('change', run)); run();
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Fraud Chain - PayGuard AI{% endblock %}
+{% block content %}
+<h2 class="mb-3" data-t="This is the fraud chain page. It connects screenshots, links and scam messages into a graph."><i class="bi bi-share"></i> Fraud Chain Reconstructor</h2>
+{% if sel %}
+<div class="card p-3">
+  <form method="get" class="mb-3">
+    <select name="id" class="form-select" onchange="this.form.submit()" data-t="Choose the verification whose graph you want to see.">
+      {% for r in records %}<option value="{{ r.pk }}" {% if r.pk == sel.pk %}selected{% endif %}>#{{ r.pk }} - {{ r.created_at|date:"d M H:i" }} - {{ r.expected_amount|default:r.extracted_amount|default:"-" }} - {{ r.get_result_display }}</option>{% endfor %}
+    </select>
+    <noscript><button class="btn btn-success btn-sm mt-2">Show</button></noscript>
+  </form>
+  <div class="mb-2"><span class="tag {{ sel.tag_class }}">{{ sel.get_result_display }}</span> <small class="text-secondary ms-2">risk score {{ sel.risk_score }}</small>
+    <a class="btn btn-sm btn-outline-light ms-2" href="{% url 'result' sel.pk %}">Open result</a></div>
+  <div class="table-responsive">
+    <svg class="chain" width="640" height="{{ graph.height }}" viewBox="0 0 640 {{ graph.height }}" role="img" aria-label="Fraud chain graph for verification {{ sel.pk }}">
+      {% for e in graph.edges %}<line x1="{{ e.x1 }}" y1="{{ e.y1 }}" x2="{{ e.x2 }}" y2="{{ e.y2 }}" stroke="{% if e.danger %}#ff5d6c{% else %}#5b8cff{% endif %}" stroke-width="2"/>{% endfor %}
+      {% for n in graph.nodes %}<g><rect x="{{ n.x|add:'-90' }}" y="{{ n.y|add:'-15' }}" width="180" height="30" rx="8" fill="#1e2747" stroke="#5b8cff"/>
+        <text x="{{ n.x }}" y="{{ n.y|add:'4' }}" text-anchor="middle">{{ n.label }}</text></g>{% endfor %}
+    </svg>
+  </div>
+  <small class="text-secondary">Red lines mark a suspicious link or scam message in the chain.</small>
+</div>
+{% else %}
+<div class="card p-4">No verifications yet. <a href="{% url 'upload' %}">Run one</a> or load demo data from the <a href="{% url 'dashboard' %}">dashboard</a>.</div>
+{% endif %}
+{% endblock %}
